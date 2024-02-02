@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+  <link rel="stylesheet" href="./dist/style.css">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <style>
+    .player-container {
+      width: 70%;
+      margin: 0 auto;
+      margin-bottom: 40px;
+    }
+  </style>
+  <style>
+    hr {
+      position: fixed;
+      height: 100vh;
+      width: 1px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: red;
+      border: none;
+    }
+  </style>
+
+  <div class="player-container">
+    <video playsinline controls id="player">
+      <source src="https://res.cloudinary.com/rkochnev/video/upload/v1673187424/video-1_cbv1i4.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <div class="timescale" id="timescale"></div>
+
+  <script type="module">
+    import Plyr from 'plyr'
+    import Timescale from './dist/miniscale.js'
+
+    const data = {
+      1670803200: [
+        {
+          id: crypto.randomUUID(),
+          start: 1670811600,
+          stop: 1670813225,
+          type: 'file-attack',
+          url: 'https://res.cloudinary.com/rkochnev/video/upload/v1673187424/video-1_cbv1i4.mp4',
+        },
+        {
+          id: crypto.randomUUID(),
+          start: 1670828400,
+          stop: 1670831123,
+          type: 'process-attack',
+          url: 'https://res.cloudinary.com/rkochnev/video/upload/v1673187482/video-2_wkdr8u.mp4',
+        },
+        {
+          id: crypto.randomUUID(),
+          start: 1670832000,
+          stop: 1670833459,
+          type: 'registry-attack',
+          url: 'https://res.cloudinary.com/rkochnev/video/upload/v1673187415/video-3_nwjv54.mp4',
+        },
+        {
+          id: crypto.randomUUID(),
+          start: 1670842800,
+          stop: 1670844937,
+          type: 'network-attack',
+          url: 'https://res.cloudinary.com/rkochnev/video/upload/v1673187444/video-4_we7oqg.mp4',
+        },
+        {
+          id: crypto.randomUUID(),
+          start: 1670853600,
+          stop: 1670854325,
+          type: 'suspicious-activity',
+          url: 'https://res.cloudinary.com/rkochnev/video/upload/v1673187300/video-5_ckkjaf.mp4',
+        },
+        {
+          id: crypto.randomUUID(),
+          start: 1670857200,
+          stop: 1670859606,
+          type: 'network-attack',
+          url: 'https://res.cloudinary.com/rkochnev/video/upload/v1673187689/video-6_rikpwr.mp4',
+        },
+        {
+          id: crypto.randomUUID(),
+          start: 1670887800,
+          stop: 1670890844,
+          type: 'registry-attack',
+          url: 'https://res.cloudinary.com/rkochnev/video/upload/v1673187986/video-7_tm2mc1.mp4',
+        },
+      ],
+    };
+
+    // Plyr
+    let player = new Plyr(document.getElementById('player'));
+
+    player.on('timeupdate', (event) => {
+      const instance = event.detail.plyr;
+      timescale.moveCursor(instance.currentTime);
+    });
+
+    player.on('ended', (event) => {
+      const instance = event.detail.plyr;
+
+      for (let value of Object.values(data)) {
+        value.forEach((element, index) => {
+          if (element.url === instance.source) {
+            if (index === value.length) return;
+            let nextIndex = index + 1;
+            timescale.switchToCell(value[nextIndex].id);
+            player.source = {
+              type: 'video',
+              sources: [{ src: value[nextIndex].url, type: 'video/mp4' }],
+            };
+            player.play();
+          }
+        });
+      }
+    });
+
+    // Timescale
+    let element = document.getElementById('timescale');
+    let timescale = new Timescale(element, data);
+
+    timescale.on('cell.click', play);
+
+    function play(e) {
+      var id = e.target.dataset.id || null;
+      if (!id) return;
+
+      let key = Object.keys(data)[0];
+      var url = data[key].filter((item) => item.id === id)[0].url;
+
+      player.pause();
+      player.source = { type: 'video', sources: [{ src: url, type: 'video/mp4' }] };
+      player.play();
+    }
+
+  </script>
+
+</body>
+
+</html>
