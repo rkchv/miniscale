@@ -4,12 +4,10 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/miniscale.umd.cjs",
   "module": "./dist/miniscale.js",
   "exports": {
     ".": {
-      "import": "./dist/miniscale.js",
-      "require": "./dist/miniscale.umd.cjs"
+      "import": "./dist/miniscale.js"
     }
   },
   "description": "Mimescale is a simple time picker that enables you to quickly select a time range on a customizable and responsive time ruler interface.",
@@ -28,7 +26,8 @@
     "prettier": "prettier --write src/**/*.ts",
     "commit-validate": "npx --no -- commitlint --edit $1",
     "pre-commit": "lint-staged",
-    "pre-push": "npm run test:vitest"
+    "pre-push": "npm run test:vitest",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.(js|ts)": [
